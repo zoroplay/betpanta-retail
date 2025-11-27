@@ -7,14 +7,24 @@ import { Geist_Mono } from "next/font/google";
 import { usePathname } from "next/navigation";
 import { RiListSettingsLine } from "react-icons/ri";
 import { useTheme } from "../providers/ThemeProvider";
-
+import { CiGlobe } from "react-icons/ci";
 import { User } from "@/data/types/user";
-import { FaChevronDown, FaMoneyCheck } from "react-icons/fa";
+import {
+  FaArrowDown,
+  FaArrowUp,
+  FaChevronDown,
+  FaMoneyCheck,
+} from "react-icons/fa";
 import { MdBusiness } from "react-icons/md";
 import { IconType } from "react-icons/lib";
 import { HiChartBar } from "react-icons/hi2";
-import { ACCOUNT, OVERVIEW } from "@/data/routes/routes";
+import { ACCOUNT, OVERVIEW, PRINT_ODDS } from "@/data/routes/routes";
 import { useAppSelector } from "@/hooks/useAppDispatch";
+import { GoMail } from "react-icons/go";
+import { IoMdArrowRoundDown, IoMdArrowRoundUp, IoMdMail } from "react-icons/io";
+import { FiAward, FiPrinter, FiUsers } from "react-icons/fi";
+import { BsBoundingBoxCircles } from "react-icons/bs";
+import { LuClock4 } from "react-icons/lu";
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
@@ -65,18 +75,18 @@ const SideBar = () => {
           {
             id: "bet-list-sports",
             name: "Bet List Sports",
-            href: ACCOUNT.BET_LIST,
+            href: ACCOUNT.SPORTS_BET_LIST,
             icon: BiSolidBarChartAlt2,
             active_icon: BiSolidBarChartAlt2,
-            sub_refs: [ACCOUNT.BET_LIST],
+            sub_refs: [ACCOUNT.SPORTS_BET_LIST],
           },
           {
             id: "bet-list-virtuals",
             name: "Bet List Virtuals",
-            href: ACCOUNT.COUPON_BET_LIST,
+            href: ACCOUNT.VIRTUALS_BET_LIST,
             icon: BiSolidBarChartAlt2,
             active_icon: BiSolidBarChartAlt2,
-            sub_refs: [ACCOUNT.COUPON_BET_LIST],
+            sub_refs: [ACCOUNT.VIRTUALS_BET_LIST],
           },
           {
             id: "transactions",
@@ -90,17 +100,49 @@ const SideBar = () => {
             id: "deposit",
             name: "Deposit",
             href: ACCOUNT.DEPOSIT,
-            icon: BiHome,
-            active_icon: BiHome,
+            icon: IoMdArrowRoundUp,
+            active_icon: FaArrowUp,
             sub_refs: [ACCOUNT.DEPOSIT],
           },
           {
             id: "withdrawal",
             name: "Withdrawal",
             href: ACCOUNT.WITHDRAW,
-            icon: BiHome,
-            active_icon: BiHome,
+            icon: IoMdArrowRoundDown,
+            active_icon: FaArrowDown,
             sub_refs: [ACCOUNT.WITHDRAW],
+          },
+          {
+            id: "messages",
+            name: "Messages",
+            href: ACCOUNT.MESSAGES,
+            icon: GoMail,
+            active_icon: IoMdMail,
+            sub_refs: [ACCOUNT.MESSAGES],
+          },
+        ],
+      },
+      {
+        id: "print-odds",
+        name: "Print Odds",
+        icon: VscAccount,
+        active_icon: VscAccount,
+        sublinks: [
+          {
+            id: "standard-print",
+            name: "Standard Print",
+            href: PRINT_ODDS.STANDARD,
+            icon: FiPrinter,
+            active_icon: FiPrinter,
+            sub_refs: [PRINT_ODDS.STANDARD],
+          },
+          {
+            id: "fast-print",
+            name: "Fast Print",
+            href: PRINT_ODDS.FAST,
+            icon: BsBoundingBoxCircles,
+            active_icon: BsBoundingBoxCircles,
+            sub_refs: [PRINT_ODDS.FAST],
           },
         ],
       },
@@ -119,20 +161,20 @@ const SideBar = () => {
             sub_refs: [ACCOUNT.PROFILE],
           },
           {
-            id: "account-detail",
-            name: "Account Detail",
-            href: ACCOUNT.ACCOUNT_DETAIL,
-            icon: VscAccount,
-            active_icon: VscAccount,
-            sub_refs: [ACCOUNT.ACCOUNT_DETAIL],
-          },
-          {
             id: "change-password",
             name: "Change Password",
             href: ACCOUNT.CHANGE_PASSWORD,
             icon: VscAccount,
             active_icon: VscAccount,
             sub_refs: [ACCOUNT.CHANGE_PASSWORD],
+          },
+          {
+            id: "view-sessions",
+            name: "View Sessions",
+            href: ACCOUNT.LOGIN_SESSIONS,
+            icon: LuClock4,
+            active_icon: LuClock4,
+            sub_refs: [ACCOUNT.LOGIN_SESSIONS],
           },
         ],
       },
@@ -143,36 +185,12 @@ const SideBar = () => {
         active_icon: MdBusiness,
         sublinks: [
           {
-            id: "new-user",
-            name: "New User",
-            href: ACCOUNT.NEW_USER,
-            icon: VscAccount,
-            active_icon: VscAccount,
-            sub_refs: [ACCOUNT.NEW_USER],
-          },
-          {
-            id: "user-list",
-            name: "User List",
-            href: ACCOUNT.USER_LIST,
-            icon: VscAccount,
-            active_icon: VscAccount,
-            sub_refs: [ACCOUNT.USER_LIST],
-          },
-          {
-            id: "transfer-to-cashier",
-            name: "Transfer to Cashier",
-            href: ACCOUNT.TRANSFER_TO_CASHIER,
-            icon: FaMoneyCheck,
-            active_icon: FaMoneyCheck,
-            sub_refs: [ACCOUNT.TRANSFER_TO_CASHIER],
-          },
-          {
-            id: "transfer-to-player",
-            name: "Transfer to Player",
-            href: ACCOUNT.TRANSFER_TO_PLAYER,
-            icon: FaMoneyCheck,
-            active_icon: FaMoneyCheck,
-            sub_refs: [ACCOUNT.TRANSFER_TO_PLAYER],
+            id: "cashiers",
+            name: "Cashiers",
+            href: ACCOUNT.CASHIERS,
+            icon: FiUsers,
+            active_icon: FiUsers,
+            sub_refs: [ACCOUNT.CASHIERS],
           },
         ],
       },
@@ -183,36 +201,20 @@ const SideBar = () => {
         active_icon: HiChartBar,
         sublinks: [
           {
-            id: "commissions",
-            name: "Commissions",
-            href: ACCOUNT.COMMISSIONS,
-            icon: FaMoneyCheck,
-            active_icon: FaMoneyCheck,
-            sub_refs: [ACCOUNT.COMMISSIONS],
+            id: "tutorials",
+            name: "Tutorials",
+            href: ACCOUNT.TUTORIALS,
+            icon: FiAward,
+            active_icon: FiAward,
+            sub_refs: [ACCOUNT.TUTORIALS],
           },
           {
-            id: "sales",
-            name: "Sales",
-            href: ACCOUNT.SALES,
-            icon: BiSolidBarChartAlt2,
-            active_icon: BiSolidBarChartAlt2,
-            sub_refs: [ACCOUNT.SALES],
-          },
-          {
-            id: "bonus",
-            name: "Bonus",
-            href: ACCOUNT.BONUS,
-            icon: FaMoneyCheck,
-            active_icon: FaMoneyCheck,
-            sub_refs: [ACCOUNT.BONUS],
-          },
-          {
-            id: "credit-liability",
-            name: "Credit Liability",
-            href: ACCOUNT.CREDIT_LIABILITY,
-            icon: FaMoneyCheck,
-            active_icon: FaMoneyCheck,
-            sub_refs: [ACCOUNT.CREDIT_LIABILITY],
+            id: "marketing-assets",
+            name: "Marketing Assets",
+            href: ACCOUNT.MARKETING_ASSETS,
+            icon: CiGlobe,
+            active_icon: CiGlobe,
+            sub_refs: [ACCOUNT.MARKETING_ASSETS],
           },
         ],
       },
@@ -253,7 +255,7 @@ const SideBar = () => {
   return (
     <aside
       className={`
-        w-72 z-1000 h-[calc(100vh-48px)] transition-all duration-300
+        w-68 z-1000 h-[calc(100vh-48px)] transition-all duration-300
         border-r flex-col sticky top-0 hidden md:flex bg-white border-gray-200
       
       `}
@@ -266,8 +268,8 @@ const SideBar = () => {
               <button
                 onClick={() => toggleSubmenu(item.id)}
                 className={`
-                  flex items-center justify-between w-full px-4 py-3
-                  font-semibold text-sm transition-all duration-200 ${
+                  flex items-center justify-between w-full px-4 py-2.5
+                  font-semibold text-xs transition-all duration-200 ${
                     activeSubmenu === item.id
                       ? "rounded-t-md"
                       : index === 0
@@ -316,7 +318,7 @@ const SideBar = () => {
                     key={sub.id}
                     href={sub.href ?? ""}
                     className={`
-                      flex items-center gap-3 px-6 py-2.5 text-xs
+                      flex items-center gap-3 px-4 py-2 text-xs font-semibold
                       transition-all duration-200
                       ${
                         theme === "dark"

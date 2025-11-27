@@ -321,12 +321,12 @@ const QuickBets = ({ formData: _form, total, index, is_empty_form }: Props) => {
                     setEventId(e.target.value);
                   }}
                   onKeyDown={handleEventIdKeyPress}
-                  type="number"
+                  // type="number"
                   tabIndex={1}
                   text_color="text-gray-700"
                   bg_color="bg-white"
                   border_color="border-gray-300"
-                  className="w-full  border rounded-lg px-3 py-2  placeholder-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all"
+                  className="w-full  text-xs border rounded-lg px-3 py-2  placeholder-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all"
                   placeholder="Enter 4-digit ID"
                   onSearch={(e) => {
                     handleEventIdChange(e);
@@ -470,20 +470,20 @@ const QuickBets = ({ formData: _form, total, index, is_empty_form }: Props) => {
       </div>
       {/* Fixture Info Panel */}
       {formData.fixture && !isFormLoading && (
-        <div className="p-1 px-2 bg-gradient-to-r from-blue-600/10 to-purple-600/10 border border-blue-500/20  rounded-t-none">
+        <div className="p-1 px-2 bg-gradient-to-r from-blue-50 to-white border border-blue-500/20  rounded-t-none">
           <div className="flex items-center justify-between">
             <div className="space-y-1">
-              <p className="text-white font-semibold text-xs">
+              <p className="text-gray-700 font-semibold text-xs">
                 {formData.fixture.name}
               </p>
-              <p className="text-slate-400 text-[11px]">
+              <p className="text-slate-500 text-[11px]">
                 Match ID: {formData.fixture.matchID} • Game ID:{" "}
                 {formData.fixture.gameID}
               </p>
             </div>
             <div className="text-right">
-              <p className="text-slate-300 text-[11px]">Available Markets</p>
-              <p className="text-blue-400 font-bold text-xs">
+              <p className="text-gray-700 text-[11px]">Available Markets</p>
+              <p className="text-blue-600 font-bold text-xs">
                 {formData.fixture.outcomes?.length || 0} outcomes
               </p>
             </div>

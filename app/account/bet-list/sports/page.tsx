@@ -24,15 +24,32 @@ interface Transaction {
 }
 
 const tableColumns = [
-  { id: "transactionId", name: "Transaction ID" },
-  { id: "description", name: "Description" },
-  { id: "amount", name: "Amount" },
-  { id: "status", name: "Status" },
-  { id: "balance", name: "Balance" },
+  { id: "coupon", name: "Coupon" },
+  {
+    id: "amount",
+    name: (
+      <span className="flex flex-col">
+        <span>Amount</span>
+        <span>Total:</span>
+      </span>
+    ),
+  },
+  { id: "result", name: "Result" },
+  {
+    id: "winning",
+    name: (
+      <span className="flex flex-col">
+        <span>Winning</span>
+        <span>Total:</span>
+      </span>
+    ),
+  },
+  { id: "cashier", name: "Cashier" },
   { id: "date", name: "Date" },
+  { id: "actions", name: "" },
 ];
 
-const TransactionsPage = () => {
+const SportsPage = () => {
   const [amountType, setAmountType] = useState<"all" | "credits" | "debits">(
     "all"
   );
@@ -144,13 +161,15 @@ const TransactionsPage = () => {
   return (
     <div className="p-4">
       <div className="">
-        <h1 className="text-xl font-bold text-gray-900 mb-2">Transactions</h1>
+        <h1 className="text-xl font-bold text-gray-900 mb-2">
+          Bet List Sports
+        </h1>
         {/* Filters */}
         <div className="flex flex-col gap-4 mb-2">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
+          <div className="grid grid-cols-2 lg:grid-cols-6 gap-2">
             <SingleSearchInput
               type="text"
-              placeholder="Search by transaction ID"
+              placeholder="Search coupon code"
               className="w-full  rounded bg-white border border-gray-200 text-sm focus:outline-none"
               bg_color={`bg-white`}
               border_color={`border-gray-200`}
@@ -166,7 +185,29 @@ const TransactionsPage = () => {
             />
             <Input
               type="text"
-              placeholder="Select period"
+              placeholder="Select Cashier"
+              className="w-full  px-4 py-2 rounded bg-white border border-gray-200 text-sm focus:outline-none"
+              bg_color={`bg-white`}
+              border_color={`border-gray-200`}
+              height="h-[36px]"
+              text_color="text-gray-700 text-xs"
+              name={""}
+              onChange={() => {}}
+            />
+            <Input
+              type="text"
+              placeholder="Select Outcome"
+              className="w-full  px-4 py-2 rounded bg-white border border-gray-200 text-sm focus:outline-none"
+              bg_color={`bg-white`}
+              border_color={`border-gray-200`}
+              height="h-[36px]"
+              text_color="text-gray-700 text-xs"
+              name={""}
+              onChange={() => {}}
+            />
+            <Input
+              type="text"
+              placeholder="Select Period"
               className="w-full  px-4 py-2 rounded bg-white border border-gray-200 text-sm focus:outline-none"
               bg_color={`bg-white`}
               border_color={`border-gray-200`}
@@ -194,13 +235,17 @@ const TransactionsPage = () => {
         {/* Table Card */}
         <div className="bg-white rounded-lg shadow-sm overflow-hidden border">
           {/* Table Header */}
-          <div className="bg-black text-xs text-white  font-semibold grid grid-cols-6">
+          <div className="bg-black text-xs text-white font-semibold grid grid-cols-7">
             {tableColumns.map((col, idx) => (
               <div
                 key={col.id}
-                className={`py-2 px-4 ${
+                className={`py-2 px-4 flex items-center ${
                   idx !== 0 ? "border-l border-gray-700" : ""
-                } ${col.id === "date" ? "flex justify-end items-center" : ""}`}
+                } ${
+                  tableColumns.length - 1 === idx
+                    ? "justify-end"
+                    : "justify-start"
+                }`}
               >
                 {col.name}
               </div>
@@ -216,7 +261,7 @@ const TransactionsPage = () => {
               transactions.map((transaction: any, idx: number) => (
                 <div
                   key={transaction.id + idx}
-                  className="grid grid-cols-6 text-xs items-center"
+                  className="grid grid-cols-7 text-xs items-center"
                 >
                   <div className="py-2 px-4 whitespace-nowrap">
                     {transaction.id}
@@ -258,7 +303,7 @@ const TransactionsPage = () => {
           </div>
         </div>
         {/* Table Footer */}
-        <div className="text-gray-600 px-4 py-3 flex flex-col md:flex-row justify-between items-center text-xs font-semibold">
+        <div className="font-semibold text-gray-600 px-4 py-3 flex flex-col md:flex-row justify-between items-center text-xs">
           <span className="">
             Showing {transactions.length} of {totalTransactions}
           </span>
@@ -289,4 +334,4 @@ const TransactionsPage = () => {
   );
 };
 
-export default TransactionsPage;
+export default SportsPage;

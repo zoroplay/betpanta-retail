@@ -4,7 +4,7 @@
 import React, { useState, useEffect } from "react";
 import { showToast } from "@/components/tools/toast";
 import Input from "@/components/inputs/Input";
-import Spinner from "@/components/spinner/Spinner";
+import BaseCard from "@/components/layout/BaseCard";
 import { useAppSelector } from "@/hooks/useAppDispatch";
 import {
   getEnvironmentVariable,
@@ -202,11 +202,9 @@ const DepositForm = () => {
 
         <div className="grid lg:grid-cols-2 gap-6">
           {/* Left Side - Payment Form */}
-          <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-            <div className="bg-blue-600 text-white px-6 py-3 text-base font-semibold">
-              Initiate Deposit
-            </div>
-            <div className="p-6">
+
+          <BaseCard title="Initiate Deposit">
+            <div className="p-2 px-4">
               <form onSubmit={handleSubmit} className="space-y-4">
                 {/* Email Address */}
                 <div className="grid grid-cols-[1fr_4fr]">
@@ -333,15 +331,14 @@ const DepositForm = () => {
                 </div>
               </form>
             </div>
-          </div>
+          </BaseCard>
+
           {/* Right Side - Instructions */}
-          <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-            <div className="bg-blue-600 text-white px-6 py-3 text-base font-semibold">
-              Important Notice
-            </div>
-            <div className="p-6">
+
+          <BaseCard title="Important Notice">
+            <div className="p-2 px-4">
               {/* Provider Logo */}
-              <div className="mb-6">
+              <div className="mb-2">
                 <img
                   src={providerInfo.image}
                   alt={providerInfo.name}
@@ -390,7 +387,7 @@ const DepositForm = () => {
                 deposit.
               </p>
             </div>
-          </div>
+          </BaseCard>
         </div>
       </div>
     </div>

@@ -23,16 +23,27 @@ interface Transaction {
   balance: string;
 }
 
-const tableColumns = [
-  { id: "transactionId", name: "Transaction ID" },
-  { id: "description", name: "Description" },
-  { id: "amount", name: "Amount" },
-  { id: "status", name: "Status" },
-  { id: "balance", name: "Balance" },
-  { id: "date", name: "Date" },
-];
-
-const TransactionsPage = () => {
+const LoginSessionsPage = () => {
+  // Table columns config for dynamic rendering
+  const tableColumns = [
+    { id: "session-start", name: "Session Start" },
+    {
+      id: "session-end",
+      name: "Session End",
+    },
+    {
+      id: "duration",
+      name: "Duration",
+    },
+    {
+      id: "ip",
+      name: "IP",
+    },
+    {
+      id: "location",
+      name: "Location",
+    },
+  ];
   const [amountType, setAmountType] = useState<"all" | "credits" | "debits">(
     "all"
   );
@@ -144,26 +155,28 @@ const TransactionsPage = () => {
   return (
     <div className="p-4">
       <div className="">
-        <h1 className="text-xl font-bold text-gray-900 mb-2">Transactions</h1>
+        <h1 className="text-xl font-bold text-gray-900 mb-2">View Sessions</h1>
         {/* Filters */}
         <div className="flex flex-col gap-4 mb-2">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
-            <SingleSearchInput
-              type="text"
-              placeholder="Search by transaction ID"
-              className="w-full  rounded bg-white border border-gray-200 text-sm focus:outline-none"
-              bg_color={`bg-white`}
-              border_color={`border-gray-200`}
-              height="h-[36px]"
-              text_color="text-gray-700 text-xs"
-              searchState={{
-                isValid: false,
-                isNotFound: false,
-                isLoading: false,
-                message: "",
-              }}
-              onSearch={() => {}}
-            />
+          <div className="grid lg:grid-cols-5 grid-cols-2 gap-2">
+            <div className="lg:col-span-2 text-gray-600">
+              <SingleSearchInput
+                type="text"
+                placeholder="Search by cashier ID"
+                className="w-full  rounded bg-white border border-gray-200 text-sm focus:outline-none"
+                bg_color={`bg-white`}
+                border_color={`border-gray-200`}
+                height="h-[36px]"
+                text_color="text-gray-700 text-xs"
+                searchState={{
+                  isValid: false,
+                  isNotFound: false,
+                  isLoading: false,
+                  message: "",
+                }}
+                onSearch={() => {}}
+              />
+            </div>
             <Input
               type="text"
               placeholder="Select period"
@@ -175,7 +188,7 @@ const TransactionsPage = () => {
               name={""}
               onChange={() => {}}
             />
-            <div className="col-span-2 text-gray-600">
+            <div className="col-span-2 text-gray-600 w-full">
               <DateRangeInput
                 label=""
                 value={dateRange}
@@ -194,13 +207,17 @@ const TransactionsPage = () => {
         {/* Table Card */}
         <div className="bg-white rounded-lg shadow-sm overflow-hidden border">
           {/* Table Header */}
-          <div className="bg-black text-xs text-white  font-semibold grid grid-cols-6">
+          <div className="bg-black text-xs text-white text-sm font-semibold grid grid-cols-5">
             {tableColumns.map((col, idx) => (
               <div
                 key={col.id}
-                className={`py-2 px-4 ${
+                className={`py-2 px-4 flex  items-center ${
                   idx !== 0 ? "border-l border-gray-700" : ""
-                } ${col.id === "date" ? "flex justify-end items-center" : ""}`}
+                } ${
+                  tableColumns.length - 1 == idx
+                    ? "justify-end"
+                    : "justify-start"
+                }`}
               >
                 {col.name}
               </div>
@@ -213,7 +230,7 @@ const TransactionsPage = () => {
                 No transactions found
               </div>
             ) : (
-              transactions.map((transaction: any, idx: number) => (
+              transactions.map((transaction, idx: number) => (
                 <div
                   key={transaction.id + idx}
                   className="grid grid-cols-6 text-xs items-center"
@@ -258,7 +275,7 @@ const TransactionsPage = () => {
           </div>
         </div>
         {/* Table Footer */}
-        <div className="text-gray-600 px-4 py-3 flex flex-col md:flex-row justify-between items-center text-xs font-semibold">
+        <div className="text-gray-500 px-4 py-3 flex flex-col md:flex-row justify-between items-center text-xs font-semibold">
           <span className="">
             Showing {transactions.length} of {totalTransactions}
           </span>
@@ -289,4 +306,4 @@ const TransactionsPage = () => {
   );
 };
 
-export default TransactionsPage;
+export default LoginSessionsPage;
