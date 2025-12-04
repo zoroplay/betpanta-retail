@@ -22,6 +22,7 @@ export enum OVERVIEW {
 export enum ACCOUNT {
   HOME = `/account`,
   SPORTS_BET_LIST = `/account/bet-list/sports`,
+  SPORTS_BET_LIST_BY_ID = `/account/bet-list/sports/:sport_id`,
   VIRTUALS_BET_LIST = `/account/bet-list/virtuals`,
   BET_LIST_PAYOUT = `/account/bet-list-payout`,
   COUPON_BET_LIST = `/account/coupon-bet-list`,
@@ -31,6 +32,7 @@ export enum ACCOUNT {
   DEPOSIT_FORM = `/account/deposit/:provider`,
   WITHDRAW = `/account/withdrawal`,
   MESSAGES = `/account/messages`,
+  MESSAGE_BY_ID = `/account/messages/:message_id`,
   CASHIERS = `/account/cashiers`,
   TUTORIALS = `/account/tutorials`,
   MARKETING_ASSETS = `/account/marketing-assets`,
@@ -64,4 +66,9 @@ export enum CALENDAR {
 export enum PRINT_ODDS {
   STANDARD = "/print/standard",
   FAST = "/print/fast",
+}
+
+export enum MARKETING {
+  HOME = "/marketing",
+  TUTORIALS = "/marketing/tutorials",
 }

@@ -1,8 +1,10 @@
 "use client";
 
+import CurrencyFormatter from "@/components/inputs/CurrencyFormatter";
 import DateRangeInput from "@/components/inputs/DateRangeInput";
 import Input from "@/components/inputs/Input";
 import SingleSearchInput from "@/components/inputs/SingleSearchInput";
+import Table from "@/components/tables/Table";
 import { AppHelper } from "@/lib/helper";
 import { useLazyFetchTransactionsQuery } from "@/redux/services/bets.service";
 import {
@@ -57,7 +59,7 @@ const TransactionsPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
 
   // Lazy fetch hook - will be triggered by Continue button
-  const [fetchTransactions, { data, isLoading }] =
+  const [fetchTransactions, { data, isFetching: isLoading }] =
     useLazyFetchTransactionsQuery();
 
   // Use API data if available, otherwise use sample data
@@ -71,6 +73,17 @@ const TransactionsPage = () => {
   const nextPage = data?.meta?.nextPage;
   const prevPage = data?.meta?.prevPage;
 
+  const getStatus = (status: number) => {
+    switch (status) {
+      case 1:
+        return <span className="text-green-600">Successful</span>;
+      case 2:
+        return <span className="text-red-600">Failed</span>;
+      default:
+        return <span className="text-gray-600">Unknown</span>;
+    }
+  };
+
   const handleNextPage = () => {
     if (hasNextPage && nextPage) {
       setCurrentPage(nextPage);
@@ -82,6 +95,7 @@ const TransactionsPage = () => {
         startDate: dateRange.startDate,
         type: amountType,
         page: nextPage,
+        userId: null,
       });
     }
   };
@@ -97,6 +111,7 @@ const TransactionsPage = () => {
         startDate: dateRange.startDate,
         type: amountType,
         page: prevPage,
+        userId: null,
       });
     }
   };
@@ -110,6 +125,7 @@ const TransactionsPage = () => {
       startDate: dateRange.startDate,
       type: amountType,
       page: currentPage,
+      userId: null,
     });
   }, [dateRange, pageSize, amountType, currentPage]); // Re-fetch when any filter changes
 
@@ -192,98 +208,78 @@ const TransactionsPage = () => {
           </div>
         </div>
         {/* Table Card */}
-        <div className="bg-white rounded-lg shadow-sm overflow-hidden border">
-          {/* Table Header */}
-          <div className="bg-black text-xs text-white  font-semibold grid grid-cols-6">
-            {tableColumns.map((col, idx) => (
-              <div
-                key={col.id}
-                className={`py-2 px-4 ${
-                  idx !== 0 ? "border-l border-gray-700" : ""
-                } ${col.id === "date" ? "flex justify-end items-center" : ""}`}
-              >
-                {col.name}
-              </div>
-            ))}
-          </div>
-          {/* Table Rows */}
-          <div className="divide-y divide-gray-200 text-gray-500">
-            {transactions.length === 0 ? (
-              <div className="text-center py-10  text-sm">
-                No transactions found
-              </div>
-            ) : (
-              transactions.map((transaction: any, idx: number) => (
-                <div
-                  key={transaction.id + idx}
-                  className="grid grid-cols-6 text-xs items-center"
-                >
-                  <div className="py-2 px-4 whitespace-nowrap">
-                    {transaction.id}
-                  </div>
-                  <div className="py-2 px-4 border-l border-gray-200 whitespace-nowrap">
-                    {transaction.description}
-                  </div>
-                  <div className="py-2 px-4 border-l border-gray-200 whitespace-nowrap">
-                    {transaction.amount}
-                  </div>
-                  <div className="py-2 px-4 border-l border-gray-200 whitespace-nowrap">
-                    <span className="text-green-500 font-medium">
-                      {transaction.status}
-                    </span>
+        <Table
+          columns={[
+            {
+              id: "id",
+              name: "Transaction ID",
+              className: "col-span-2",
+            },
+            {
+              id: "description",
+              name: "Description",
+              className: "col-span-3",
+            },
+            {
+              id: "amount",
+              name: "Amount",
+              className: "col-span-2",
+            },
 
-                    {/* {transaction.status === "Failed" && (
-                      <span className="text-red-500 font-medium">Failed</span>
-                    )} */}
-                    {transaction.status === "Processing" && (
-                      <span className="text-orange-500 font-medium">
-                        Processing
-                      </span>
-                    )}
-                    {transaction.status === "Pending" && (
-                      <span className="text-gray-500 font-medium">Pending</span>
-                    )}
-                  </div>
-                  <div className="py-2 px-4 border-l border-gray-200 whitespace-nowrap">
-                    {transaction.balance}
-                  </div>
-                  <div className="py-2 px-4 border-l border-gray-200 whitespace-nowrap">
-                    {AppHelper.formatTransactionDate(
-                      transaction.transactionDate
-                    )}
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
-        {/* Table Footer */}
-        <div className="text-gray-600 px-4 py-3 flex flex-col md:flex-row justify-between items-center text-xs font-semibold">
-          <span className="">
-            Showing {transactions.length} of {totalTransactions}
-          </span>
-          <div className="flex items-center gap-2 mt-2 md:mt-0">
-            <span>
-              Page {currentPage} of {totalPages}
-            </span>
-            <button
-              type="button"
-              onClick={handlePrevPage}
-              disabled={!hasPrevPage}
-              className="p-1 rounded bg-white border border-gray-200 disabled:opacity-50"
-            >
-              <ChevronLeft size={20} />
-            </button>
-            <button
-              type="button"
-              onClick={handleNextPage}
-              disabled={!hasNextPage}
-              className="p-1 rounded bg-white border border-gray-200 disabled:opacity-50"
-            >
-              <ChevronRight size={20} />
-            </button>
-          </div>
-        </div>
+            {
+              id: "status",
+              name: "Status",
+              className: "col-span-3",
+            },
+            {
+              id: "balance",
+              name: "Balance",
+              className: "col-span-2",
+            },
+            {
+              id: "date",
+              name: "Date",
+              className: "col-span-3",
+            },
+          ]}
+          className="grid-cols-[repeat(15,minmax(0,1fr))]"
+          pagination={{
+            total: data?.meta?.total || 0,
+            perPage: parseInt(pageSize),
+            onPageSizeChange: (size: number) => {
+              setPageSize(String(size));
+            },
+            currentPage: currentPage,
+            lastPage: totalPages,
+            nextPage: nextPage || 0,
+            prevPage: prevPage || 0,
+            onPageChange: (page: number) => {
+              setCurrentPage(page);
+            },
+          }}
+          data={transactions.map((transaction) => ({
+            id: transaction.id,
+            date: AppHelper.formatDate(transaction.transactionDate),
+            description: transaction.description,
+
+            amount: (
+              <CurrencyFormatter
+                amount={transaction.amount}
+                className={""}
+                spanClassName={""}
+              />
+            ),
+            status: getStatus(transaction.status),
+            balance: (
+              <CurrencyFormatter
+                amount={transaction.balance}
+                className={""}
+                spanClassName={""}
+              />
+            ),
+          }))}
+          isLoading={isLoading}
+        />
       </div>
     </div>
   );

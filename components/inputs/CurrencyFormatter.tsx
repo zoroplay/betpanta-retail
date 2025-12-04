@@ -1,4 +1,4 @@
-import { useAppSelector } from "@/redux/hooks";
+import { useAppSelector } from "@/hooks/useAppDispatch";
 import React, { useState } from "react";
 
 type Props = {
@@ -14,7 +14,10 @@ const CurrencyFormatter = ({
   spanClassName = "",
   precision = 1,
 }: Props) => {
-  const [isAbbreviated, setIsAbbreviated] = useState(true);
+  const [isAbbreviated, setIsAbbreviated] = useState(false);
+  const { global_variables } = useAppSelector((state) => state.app);
+  const locale = global_variables?.currency_code === "NGN" ? "en-NG" : "en-US";
+  const currency = global_variables?.currency_code || "NGN";
 
   let numeric_amount = typeof amount === "string" ? parseFloat(amount) : amount;
   if (isNaN(numeric_amount)) numeric_amount = 0;
@@ -24,9 +27,9 @@ const CurrencyFormatter = ({
 
     // Don't abbreviate numbers under 1,000
     if (absValue < 1000) {
-      return new Intl.NumberFormat("en-US", {
+      return new Intl.NumberFormat(locale, {
         style: "currency",
-        currency: "USD",
+        currency: currency,
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       }).format(value);
@@ -34,17 +37,23 @@ const CurrencyFormatter = ({
 
     // Handle larger numbers
     if (absValue >= 1e9) {
-      return `$${(value / 1e9).toFixed(precision)}B`;
+      return `${global_variables?.currency}${(value / 1e9).toFixed(
+        precision
+      )}B`;
     }
     if (absValue >= 1e6) {
-      return `$${(value / 1e6).toFixed(precision)}M`;
+      return `${global_variables?.currency}${(value / 1e6).toFixed(
+        precision
+      )}M`;
     }
     if (absValue >= 1e3) {
-      return `$${(value / 1e3).toFixed(precision)}K`;
+      return `${global_variables?.currency}${(value / 1e3).toFixed(
+        precision
+      )}K`;
     }
-    return new Intl.NumberFormat("en-US", {
+    return new Intl.NumberFormat(locale, {
       style: "currency",
-      currency: "USD",
+      currency: currency || "NGN",
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     }).format(value);
@@ -75,9 +84,9 @@ const CurrencyFormatter = ({
       };
     }
 
-    const formatted = new Intl.NumberFormat("en-US", {
+    const formatted = new Intl.NumberFormat(locale, {
       style: "currency",
-      currency: "USD",
+      currency: currency || "USD",
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     }).format(value);
@@ -109,7 +118,7 @@ const CurrencyFormatter = ({
 
   return (
     <div
-      className={`text-inherit  ${
+      className={`text-inherit ${className}  ${
         Math.abs(numeric_amount) >= 1000
           ? "cursor-pointer hover:opacity-80"
           : ""

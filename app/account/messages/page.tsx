@@ -3,25 +3,9 @@
 import DateRangeInput from "@/components/inputs/DateRangeInput";
 import Input from "@/components/inputs/Input";
 import SingleSearchInput from "@/components/inputs/SingleSearchInput";
-import { AppHelper } from "@/lib/helper";
-import { useLazyFetchTransactionsQuery } from "@/redux/services/bets.service";
-import {
-  getEnvironmentVariable,
-  ENVIRONMENT_VARIABLES,
-} from "@/redux/services/configs/environment.config";
-import { CheckCheck, FileText, ChevronLeft, ChevronRight } from "lucide-react";
-import { useState, useEffect } from "react";
-
-interface Transaction {
-  id: string;
-  date: string;
-  transaction: string;
-  betslip: string;
-  credit: string;
-  debit: string;
-  subject: string;
-  balance: string;
-}
+import Table from "@/components/tables/Table";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 const SportsPage = () => {
   const [amountType, setAmountType] = useState<"all" | "credits" | "debits">(
@@ -30,7 +14,7 @@ const SportsPage = () => {
   const [transactionType, setTransactionType] = useState("");
   const [normalChecked, setNormalChecked] = useState(true);
   const [virtualBetsChecked, setVirtualBetsChecked] = useState(true);
-
+  const router = useRouter();
   // Set default date range: 2 days ago to today
   const getDefaultDateRange = () => {
     const today = new Date();
@@ -47,62 +31,50 @@ const SportsPage = () => {
   const [pageSize, setPageSize] = useState("15");
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Lazy fetch hook - will be triggered by Continue button
-  const [fetchTransactions, { data, isLoading }] =
-    useLazyFetchTransactionsQuery();
+  // Mock messages data
+  const messages = [
+    {
+      id: "MSG001",
+      description: "Welcome to the platform!",
+      amount: "High",
+      status: "Read",
+      transactionDate: "2025-12-04",
+    },
+    {
+      id: "MSG002",
+      description: "Your account has been updated.",
+      amount: "Medium",
+      status: "Unread",
+      transactionDate: "2025-12-03",
+    },
+    {
+      id: "MSG003",
+      description: "Maintenance scheduled for tomorrow.",
+      amount: "Low",
+      status: "Unread",
+      transactionDate: "2025-12-02",
+    },
+  ];
 
-  // Use API data if available, otherwise use sample data
-  const transactions = Array.isArray(data?.data) ? data?.data : [];
-
-  // Pagination helpers
-  const totalTransactions = data?.meta?.total || 0;
-  const totalPages = Math.ceil(totalTransactions / parseInt(pageSize)) || 1;
-  const hasNextPage = data?.meta?.nextPage !== null;
-  const hasPrevPage = data?.meta?.prevPage !== null;
-  const nextPage = data?.meta?.nextPage;
-  const prevPage = data?.meta?.prevPage;
+  // Pagination helpers for mock data
+  const totalMessages = messages.length;
+  const totalPages = Math.ceil(totalMessages / parseInt(pageSize)) || 1;
+  const hasNextPage = currentPage < totalPages;
+  const hasPrevPage = currentPage > 1;
+  const nextPage = hasNextPage ? currentPage + 1 : null;
+  const prevPage = hasPrevPage ? currentPage - 1 : null;
 
   const handleNextPage = () => {
     if (hasNextPage && nextPage) {
       setCurrentPage(nextPage);
-      // Auto-fetch when page changes
-      fetchTransactions({
-        clientId: getEnvironmentVariable(ENVIRONMENT_VARIABLES.CLIENT_ID)!,
-        endDate: dateRange.endDate,
-        page_size: parseInt(pageSize),
-        startDate: dateRange.startDate,
-        type: amountType,
-        page: nextPage,
-      });
     }
   };
 
   const handlePrevPage = () => {
     if (hasPrevPage && prevPage) {
       setCurrentPage(prevPage);
-      // Auto-fetch when page changes
-      fetchTransactions({
-        clientId: getEnvironmentVariable(ENVIRONMENT_VARIABLES.CLIENT_ID)!,
-        endDate: dateRange.endDate,
-        page_size: parseInt(pageSize),
-        startDate: dateRange.startDate,
-        type: amountType,
-        page: prevPage,
-      });
     }
   };
-
-  // Auto-fetch when filters change
-  useEffect(() => {
-    fetchTransactions({
-      clientId: getEnvironmentVariable(ENVIRONMENT_VARIABLES.CLIENT_ID)!,
-      endDate: dateRange.endDate,
-      page_size: parseInt(pageSize),
-      startDate: dateRange.startDate,
-      type: amountType,
-      page: currentPage,
-    });
-  }, [dateRange, pageSize, amountType, currentPage]); // Re-fetch when any filter changes
 
   const handleCancel = () => {
     // Reset all filters to defaults
@@ -183,105 +155,35 @@ const SportsPage = () => {
           </div>
         </div>
         {/* Table Card */}
-        <div className="bg-white rounded-lg shadow-sm overflow-hidden border">
-          {/* Table Header */}
-          <div className="bg-black text-xs text-white  font-semibold grid grid-cols-11">
-            <div className="py-2 px-4 flex justify-start items-center col-span-2">
-              Message ID
-            </div>
-
-            <div className="py-2 px-4 border-l border-gray-700 flex justify-start items-center col-span-3">
-              Subject
-            </div>
-            <div className="py-2 px-4 border-l border-gray-700 flex justify-start items-center col-span-2">
-              Priority
-            </div>
-            <div className="py-2 px-4 border-l border-gray-700 flex justify-start items-center">
-              Status
-            </div>
-            <div className="py-2 px-4 border-l border-gray-700  flex justify-start items-center col-span-2">
-              Date
-            </div>
-            <div className="py-2 px-4 border-l border-gray-700 flex justify-end items-center"></div>
-          </div>
-          {/* Table Rows */}
-          <div className="divide-y divide-gray-200 text-gray-500">
-            {transactions.length === 0 ? (
-              <div className="text-center py-10  text-sm">
-                No transactions found
-              </div>
-            ) : (
-              transactions.map((transaction: any, idx: number) => (
-                <div
-                  key={transaction.id + idx}
-                  className="grid grid-cols-7 text-xs items-center"
-                >
-                  <div className="py-2 px-4 whitespace-nowrap">
-                    {transaction.id}
-                  </div>
-                  <div className="py-2 px-4 border-l border-gray-200 whitespace-nowrap">
-                    {transaction.description}
-                  </div>
-                  <div className="py-2 px-4 border-l border-gray-200 whitespace-nowrap">
-                    {transaction.amount}
-                  </div>
-                  <div className="py-2 px-4 border-l border-gray-200 whitespace-nowrap">
-                    <span className="text-green-500 font-medium">
-                      {transaction.status}
-                    </span>
-
-                    {/* {transaction.status === "Failed" && (
-                      <span className="text-red-500 font-medium">Failed</span>
-                    )} */}
-                    {transaction.status === "Processing" && (
-                      <span className="text-orange-500 font-medium">
-                        Processing
-                      </span>
-                    )}
-                    {transaction.status === "Pending" && (
-                      <span className="text-gray-500 font-medium">Pending</span>
-                    )}
-                  </div>
-                  <div className="py-2 px-4 border-l border-gray-200 whitespace-nowrap">
-                    {transaction.balance}
-                  </div>
-                  <div className="py-2 px-4 border-l border-gray-200 whitespace-nowrap">
-                    {AppHelper.formatTransactionDate(
-                      transaction.transactionDate
-                    )}
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
-        {/* Table Footer */}
-        <div className="font-semibold text-gray-600 px-4 py-3 flex flex-col md:flex-row justify-between items-center text-xs">
-          <span className="">
-            Showing {transactions.length} of {totalTransactions}
-          </span>
-          <div className="flex items-center gap-2 mt-2 md:mt-0">
-            <span>
-              Page {currentPage} of {totalPages}
-            </span>
-            <button
-              type="button"
-              onClick={handlePrevPage}
-              disabled={!hasPrevPage}
-              className="p-1 rounded bg-white border border-gray-200 disabled:opacity-50"
-            >
-              <ChevronLeft size={20} />
-            </button>
-            <button
-              type="button"
-              onClick={handleNextPage}
-              disabled={!hasNextPage}
-              className="p-1 rounded bg-white border border-gray-200 disabled:opacity-50"
-            >
-              <ChevronRight size={20} />
-            </button>
-          </div>
-        </div>
+        {/* Table Card - replaced with Table component */}
+        <Table
+          columns={[
+            { id: "id", name: "Message ID" },
+            { id: "description", name: "Subject" },
+            { id: "amount", name: "Priority" },
+            { id: "status", name: "Status" },
+            { id: "transactionDate", name: "Date" },
+          ]}
+          data={messages}
+          isLoading={false}
+          className="grid-cols-5"
+          onRowSelect={(sel) => {
+            router.push(`/account/messages/${sel.id}`);
+          }}
+          pagination={{
+            currentPage,
+            total: totalMessages,
+            perPage: parseInt(pageSize),
+            onPageChange: setCurrentPage,
+            onPageSizeChange: (size) => {
+              setPageSize(String(size));
+              setCurrentPage(1);
+            },
+            nextPage: nextPage || currentPage + 1,
+            lastPage: totalPages,
+            prevPage: prevPage || currentPage - 1,
+          }}
+        />
       </div>
     </div>
   );

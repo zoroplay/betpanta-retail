@@ -6,6 +6,7 @@ import { Suspense } from "react";
 import { Providers } from "@/redux/provider";
 import Layout from "@/components/layout/Layout";
 import Spinner from "@/components/spinner/Spinner";
+import { useGetGlobalVariablesQuery } from "@/redux/services/app.service";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

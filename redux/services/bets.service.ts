@@ -192,7 +192,10 @@ const BetsApiSlice = apiSlice.injectEndpoints({
       GetTransactionsDto
     >({
       query: (data) => ({
-        url: `${BETTING_ACTIONS.GET_TRANSACTIONS}`,
+        url: AppHelper.buildQueryUrl(BETTING_ACTIONS.GET_TRANSACTIONS, {
+          limit: data.page_size,
+          page: data.page,
+        }),
         method: REQUEST_ACTIONS.POST,
         body: data,
       }),

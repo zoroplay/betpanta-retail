@@ -3,14 +3,9 @@
 import DateRangeInput from "@/components/inputs/DateRangeInput";
 import Input from "@/components/inputs/Input";
 import SingleSearchInput from "@/components/inputs/SingleSearchInput";
-import { AppHelper } from "@/lib/helper";
-import { useLazyFetchTransactionsQuery } from "@/redux/services/bets.service";
-import {
-  getEnvironmentVariable,
-  ENVIRONMENT_VARIABLES,
-} from "@/redux/services/configs/environment.config";
+import Table from "@/components/tables/Table";
+import { useState } from "react";
 import { CheckCheck, FileText, ChevronLeft, ChevronRight } from "lucide-react";
-import { useState, useEffect } from "react";
 
 interface Transaction {
   id: string;
@@ -67,62 +62,54 @@ const LoginSessionsPage = () => {
   const [pageSize, setPageSize] = useState("15");
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Lazy fetch hook - will be triggered by Continue button
-  const [fetchTransactions, { data, isLoading }] =
-    useLazyFetchTransactionsQuery();
+  // Mock data for login sessions
+  const transactions = [
+    {
+      "session-start": "2025-12-04 09:00",
+      "session-end": "2025-12-04 17:00",
+      duration: "8h",
+      ip: "192.168.1.10",
+      location: "Lagos, NG",
+    },
+    {
+      "session-start": "2025-12-03 10:00",
+      "session-end": "2025-12-03 18:00",
+      duration: "8h",
+      ip: "192.168.1.11",
+      location: "Abuja, NG",
+    },
+    {
+      "session-start": "2025-12-02 08:30",
+      "session-end": "2025-12-02 16:30",
+      duration: "8h",
+      ip: "192.168.1.12",
+      location: "Kano, NG",
+    },
+  ];
 
-  // Use API data if available, otherwise use sample data
-  const transactions = Array.isArray(data?.data) ? data?.data : [];
-
-  // Pagination helpers
-  const totalTransactions = data?.meta?.total || 0;
+  // Pagination helpers for mock data
+  const totalTransactions = transactions.length;
   const totalPages = Math.ceil(totalTransactions / parseInt(pageSize)) || 1;
-  const hasNextPage = data?.meta?.nextPage !== null;
-  const hasPrevPage = data?.meta?.prevPage !== null;
-  const nextPage = data?.meta?.nextPage;
-  const prevPage = data?.meta?.prevPage;
+  const hasNextPage = currentPage < totalPages;
+  const hasPrevPage = currentPage > 1;
+  const nextPage = hasNextPage ? currentPage + 1 : null;
+  const prevPage = hasPrevPage ? currentPage - 1 : null;
 
   const handleNextPage = () => {
     if (hasNextPage && nextPage) {
       setCurrentPage(nextPage);
       // Auto-fetch when page changes
-      fetchTransactions({
-        clientId: getEnvironmentVariable(ENVIRONMENT_VARIABLES.CLIENT_ID)!,
-        endDate: dateRange.endDate,
-        page_size: parseInt(pageSize),
-        startDate: dateRange.startDate,
-        type: amountType,
-        page: nextPage,
-      });
     }
   };
 
   const handlePrevPage = () => {
     if (hasPrevPage && prevPage) {
       setCurrentPage(prevPage);
-      // Auto-fetch when page changes
-      fetchTransactions({
-        clientId: getEnvironmentVariable(ENVIRONMENT_VARIABLES.CLIENT_ID)!,
-        endDate: dateRange.endDate,
-        page_size: parseInt(pageSize),
-        startDate: dateRange.startDate,
-        type: amountType,
-        page: prevPage,
-      });
     }
   };
 
   // Auto-fetch when filters change
-  useEffect(() => {
-    fetchTransactions({
-      clientId: getEnvironmentVariable(ENVIRONMENT_VARIABLES.CLIENT_ID)!,
-      endDate: dateRange.endDate,
-      page_size: parseInt(pageSize),
-      startDate: dateRange.startDate,
-      type: amountType,
-      page: currentPage,
-    });
-  }, [dateRange, pageSize, amountType, currentPage]); // Re-fetch when any filter changes
+  // Re-fetch when any filter changes
 
   const handleCancel = () => {
     // Reset all filters to defaults
@@ -205,102 +192,25 @@ const LoginSessionsPage = () => {
           </div>
         </div>
         {/* Table Card */}
-        <div className="bg-white rounded-lg shadow-sm overflow-hidden border">
-          {/* Table Header */}
-          <div className="bg-black text-xs text-white text-sm font-semibold grid grid-cols-5">
-            {tableColumns.map((col, idx) => (
-              <div
-                key={col.id}
-                className={`py-2 px-4 flex  items-center ${
-                  idx !== 0 ? "border-l border-gray-700" : ""
-                } ${
-                  tableColumns.length - 1 == idx
-                    ? "justify-end"
-                    : "justify-start"
-                }`}
-              >
-                {col.name}
-              </div>
-            ))}
-          </div>
-          {/* Table Rows */}
-          <div className="divide-y divide-gray-200 text-gray-500">
-            {transactions.length === 0 ? (
-              <div className="text-center py-10  text-sm">
-                No transactions found
-              </div>
-            ) : (
-              transactions.map((transaction, idx: number) => (
-                <div
-                  key={transaction.id + idx}
-                  className="grid grid-cols-6 text-xs items-center"
-                >
-                  <div className="py-2 px-4 whitespace-nowrap">
-                    {transaction.id}
-                  </div>
-                  <div className="py-2 px-4 border-l border-gray-200 whitespace-nowrap">
-                    {transaction.description}
-                  </div>
-                  <div className="py-2 px-4 border-l border-gray-200 whitespace-nowrap">
-                    {transaction.amount}
-                  </div>
-                  <div className="py-2 px-4 border-l border-gray-200 whitespace-nowrap">
-                    <span className="text-green-500 font-medium">
-                      {transaction.status}
-                    </span>
-
-                    {/* {transaction.status === "Failed" && (
-                      <span className="text-red-500 font-medium">Failed</span>
-                    )} */}
-                    {transaction.status === "Processing" && (
-                      <span className="text-orange-500 font-medium">
-                        Processing
-                      </span>
-                    )}
-                    {transaction.status === "Pending" && (
-                      <span className="text-gray-500 font-medium">Pending</span>
-                    )}
-                  </div>
-                  <div className="py-2 px-4 border-l border-gray-200 whitespace-nowrap">
-                    {transaction.balance}
-                  </div>
-                  <div className="py-2 px-4 border-l border-gray-200 whitespace-nowrap">
-                    {AppHelper.formatTransactionDate(
-                      transaction.transactionDate
-                    )}
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
-        {/* Table Footer */}
-        <div className="text-gray-500 px-4 py-3 flex flex-col md:flex-row justify-between items-center text-xs font-semibold">
-          <span className="">
-            Showing {transactions.length} of {totalTransactions}
-          </span>
-          <div className="flex items-center gap-2 mt-2 md:mt-0">
-            <span>
-              Page {currentPage} of {totalPages}
-            </span>
-            <button
-              type="button"
-              onClick={handlePrevPage}
-              disabled={!hasPrevPage}
-              className="p-1 rounded bg-white border border-gray-200 disabled:opacity-50"
-            >
-              <ChevronLeft size={20} />
-            </button>
-            <button
-              type="button"
-              onClick={handleNextPage}
-              disabled={!hasNextPage}
-              className="p-1 rounded bg-white border border-gray-200 disabled:opacity-50"
-            >
-              <ChevronRight size={20} />
-            </button>
-          </div>
-        </div>
+        <Table
+          columns={tableColumns}
+          data={transactions}
+          isLoading={false}
+          className="grid-cols-5"
+          pagination={{
+            currentPage,
+            total: totalTransactions,
+            perPage: parseInt(pageSize),
+            onPageChange: setCurrentPage,
+            onPageSizeChange: (size) => {
+              setPageSize(String(size));
+              setCurrentPage(1);
+            },
+            nextPage: nextPage || currentPage + 1,
+            lastPage: totalPages,
+            prevPage: prevPage || currentPage - 1,
+          }}
+        />
       </div>
     </div>
   );

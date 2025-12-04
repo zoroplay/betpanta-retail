@@ -5,6 +5,7 @@ export interface GetTransactionsDto {
   startDate: string;
   type: string;
   page: number;
+  userId: number | null;
 }
 export interface GetBetListDto {
   betslipId: string;

@@ -18,7 +18,7 @@ import {
 import { MdBusiness } from "react-icons/md";
 import { IconType } from "react-icons/lib";
 import { HiChartBar } from "react-icons/hi2";
-import { ACCOUNT, OVERVIEW, PRINT_ODDS } from "@/data/routes/routes";
+import { ACCOUNT, MARKETING, OVERVIEW, PRINT_ODDS } from "@/data/routes/routes";
 import { useAppSelector } from "@/hooks/useAppDispatch";
 import { GoMail } from "react-icons/go";
 import { IoMdArrowRoundDown, IoMdArrowRoundUp, IoMdMail } from "react-icons/io";
@@ -203,7 +203,7 @@ const SideBar = () => {
           {
             id: "tutorials",
             name: "Tutorials",
-            href: ACCOUNT.TUTORIALS,
+            href: MARKETING.TUTORIALS,
             icon: FiAward,
             active_icon: FiAward,
             sub_refs: [ACCOUNT.TUTORIALS],

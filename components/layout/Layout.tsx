@@ -17,6 +17,7 @@ import { AUTH } from "@/data/routes/routes";
 import { useAppSelector, useAppDispatch } from "@/hooks/useAppDispatch";
 import SideBar from "./SideBar";
 import Header from "./Header";
+import { useGetGlobalVariablesQuery } from "@/redux/services/app.service";
 const questrial = Questrial({
   subsets: ["latin"],
   weight: ["400"],
@@ -33,6 +34,7 @@ const Layout = ({
   const router = useRouter();
   const { refetch_user, user } = useAppSelector((state) => state.user);
   const dispatch = useAppDispatch();
+  useGetGlobalVariablesQuery();
 
   useEffect(() => {
     // if (

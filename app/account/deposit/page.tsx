@@ -6,6 +6,7 @@ import { useFetchPaymentMethodsQuery } from "@/redux/services/wallet.service";
 import { AlertCircle, CreditCard, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React from "react";
+import Table from "@/components/tables/Table";
 
 const Deposit = () => {
   const router = useRouter();
@@ -207,6 +208,85 @@ const Deposit = () => {
     );
   }
 
+  // Table columns for payment methods
+  const tableColumns = [
+    { id: "method", name: "Payment Method" },
+    { id: "description", name: "Description" },
+    { id: "fee", name: "Fee" },
+    { id: "minAmount", name: "Min Amount" },
+    { id: "actions", name: "" },
+  ];
+
+  // Table data for payment methods
+  const tableData = filteredPaymentMethods.map((item, index) => {
+    const providerInfo = getProviderInfo(item.provider);
+    return {
+      method: (
+        <div className="flex items-center gap-2">
+          <div className="w-10 h-10 rounded flex items-center justify-center overflow-hidden bg-white border p-1">
+            <img
+              src={providerInfo.image}
+              alt={`${providerInfo.name} logo`}
+              className="w-full h-full object-contain"
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.style.display = "none";
+                const parent = target.parentElement;
+                if (parent) {
+                  parent.innerHTML = `<span class='text-xs font-bold text-gray-600'>${item.provider.toUpperCase()}</span>`;
+                }
+              }}
+            />
+          </div>
+          <div>
+            <div className="font-semibold text-sm text-gray-900">
+              {providerInfo.name}
+            </div>
+            <div className="text-xs text-gray-600">
+              {item.provider === "paystack" && "(Card/bank) Instant Credit"}
+              {item.provider === "opay" &&
+                "Instant Credit on deposits via Opay app and Opay agent shop"}
+              {item.provider !== "paystack" &&
+                item.provider !== "opay" &&
+                providerInfo.description}
+            </div>
+          </div>
+        </div>
+      ),
+      description: (
+        <span className="text-xs text-gray-700">
+          {item.provider === "paystack" && "(Card/bank) Instant Credit"}
+          {item.provider === "interswitch" && "Instant Credit"}
+          {item.provider === "opay" &&
+            "Instant Credit on deposits via Opay app and Opay agent shop"}
+          {item.provider === "quickteller" && "Instant Credit"}
+          {item.provider === "transfer" &&
+            "Deposit may take up to 24 hours to reflect"}
+          {item.provider === "zenith" && "Instant Credit"}
+          {![
+            "paystack",
+            "interswitch",
+            "opay",
+            "quickteller",
+            "transfer",
+            "zenith",
+          ].includes(item.provider) && "Instant Credit"}
+        </span>
+      ),
+      fee: <span className="font-semibold  text-gray-900">FREE</span>,
+      minAmount: <span className="font-semibold  text-gray-900">N50</span>,
+      actions: (
+        <button
+          onClick={() => handleDepositClick(item.provider)}
+          className="bg-blue-600 cursor-pointer hover:bg-blue-700 text-white px-4 py-2 rounded font-semibold text-xs transition-all flex items-center gap-2"
+        >
+          Deposit
+          <Plus size={14} className="bg-white rounded-full text-blue-600" />
+        </button>
+      ),
+    };
+  });
+
   return (
     <div className={` p-4`}>
       <div className="flex flex-col gap-2">
@@ -229,134 +309,13 @@ const Deposit = () => {
         </div>
 
         {/* Payment Methods Table */}
-        <div className="border rounded-lg overflow-hidden bg-white shadow-sm">
-          {filteredPaymentMethods.length === 0 ? (
-            <div className="text-center py-12">
-              <div
-                className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6`}
-              >
-                <CreditCard className={`text-secondary`} size={24} />
-              </div>
-              <h3 className={`text-xl font-semibold text-secondary mb-2`}>
-                No Payment Methods Available
-              </h3>
-              <p className={`text-secondary`}>
-                Please contact support for assistance setting up payment options
-              </p>
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              {/* Table Header */}
-              <div className="bg-gray-900 text-white px-4 ">
-                <div className="grid grid-cols-[3fr_4fr_1fr_1fr_1fr] gap-2 font-semibold text-xs w-full">
-                  <span className="py-2">Payment Method</span>
-                  <span className="border-l py-2 border-gray-700 pl-6">
-                    Description
-                  </span>
-                  <span className="border-l py-2 border-gray-700 pl-6">
-                    Fee
-                  </span>
-                  <span className="border-l py-2 truncate border-gray-700 pl-6">
-                    Min Amount
-                  </span>
-                  <span className="border-l py-2 border-gray-700 pl-6"></span>
-                </div>
-              </div>
 
-              {/* Table Rows */}
-              {filteredPaymentMethods.map((item, index) => {
-                const providerInfo = getProviderInfo(item.provider);
-
-                return (
-                  <div
-                    key={item.id || index}
-                    className="border-b last:border-b-0 px-4 hover:bg-gray-50 transition-colors"
-                  >
-                    <div className="grid grid-cols-[3fr_4fr_1fr_1fr_1fr] gap-2 items-center">
-                      {/* Payment Method with Logo */}
-                      <div className="flex items-center gap-2 py-2">
-                        <div className="w-10 h-10 rounded flex items-center justify-center overflow-hidden bg-white border p-1">
-                          <img
-                            src={providerInfo.image}
-                            alt={`${providerInfo.name} logo`}
-                            className="w-full h-full object-contain"
-                            onError={(e) => {
-                              const target = e.target as HTMLImageElement;
-                              target.style.display = "none";
-                              const parent = target.parentElement;
-                              if (parent) {
-                                parent.innerHTML = `<span class="text-xs font-bold text-gray-600">${item.provider.toUpperCase()}</span>`;
-                              }
-                            }}
-                          />
-                        </div>
-                        <div>
-                          <div className="font-semibold text-sm text-gray-900">
-                            {providerInfo.name}
-                          </div>
-                          <div className="text-xs text-gray-600">
-                            {item.provider === "paystack" &&
-                              "(Card/bank) Instant Credit"}
-                            {item.provider === "opay" &&
-                              "Instant Credit on deposits via Opay app and Opay agent shop"}
-                            {item.provider !== "paystack" &&
-                              item.provider !== "opay" &&
-                              providerInfo.description}
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Description */}
-                      <div className="text-sm text-gray-700 border-l border-gray-200 pl-6 py-2 h-full flex justify-start items-center">
-                        {item.provider === "paystack" &&
-                          "(Card/bank) Instant Credit"}
-                        {item.provider === "interswitch" && "Instant Credit"}
-                        {item.provider === "opay" &&
-                          "Instant Credit on deposits via Opay app and Opay agent shop"}
-                        {item.provider === "quickteller" && "Instant Credit"}
-                        {item.provider === "transfer" &&
-                          "Deposit may take up to 24 hours to reflect"}
-                        {item.provider === "zenith" && "Instant Credit"}
-                        {![
-                          "paystack",
-                          "interswitch",
-                          "opay",
-                          "quickteller",
-                          "transfer",
-                          "zenith",
-                        ].includes(item.provider) && "Instant Credit"}
-                      </div>
-
-                      {/* Fee */}
-                      <div className="font-semibold text-sm flex justify-start items-center h-full text-gray-900 border-l border-gray-200 pl-6 py-2">
-                        FREE
-                      </div>
-
-                      {/* Minimum Amount */}
-                      <div className="font-semibold flex justify-start items-center text-sm h-full text-gray-900 border-l border-gray-200 pl-6 py-2">
-                        N50
-                      </div>
-
-                      {/* Deposit Button */}
-                      <div className="border-l h-full border-gray-200 pl-2 py-2">
-                        <button
-                          onClick={() => handleDepositClick(item.provider)}
-                          className="bg-blue-600 cursor-pointer hover:bg-blue-700 text-white px-4 py-2 rounded font-semibold text-xs transition-all flex items-center gap-2"
-                        >
-                          Deposit
-                          <Plus
-                            size={14}
-                            className="bg-white rounded-full text-blue-600"
-                          />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
+        <Table
+          columns={tableColumns}
+          data={tableData}
+          isLoading={false}
+          className="grid-cols-5"
+        />
       </div>
     </div>
   );

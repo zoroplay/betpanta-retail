@@ -256,7 +256,7 @@ export class AppHelper {
     AppHelper._globalTimeOffset = timeOffset;
   }
 
-  static formatTransactionDate = (dateString: string): string => {
+  static formatDate = (dateString: string): string => {
     try {
       const date = new Date(dateString);
 
@@ -278,6 +278,7 @@ export class AppHelper {
       return dateString; // Return original if error
     }
   };
+
   // Getter for global timeoffset
   static getGlobalTimeOffset(): string {
     return AppHelper._globalTimeOffset;
