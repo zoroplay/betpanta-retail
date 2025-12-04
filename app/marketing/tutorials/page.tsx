@@ -1,4 +1,5 @@
 "use client";
+import BaseCard from "@/components/layout/BaseCard";
 import { useState } from "react";
 
 const topics = [
@@ -69,19 +70,17 @@ export default function TutorialsPage() {
   const [activeIdx, setActiveIdx] = useState(0);
 
   return (
-    <div className="bg-blue-50 min-h-screen p-8">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Tutorials</h1>
-      <div className="flex gap-6">
+    <div className="bg-blue-50 min-h-screen p-2">
+      <h1 className="text-xl font-bold text-gray-900 mb-2">Tutorials</h1>
+      <div className="grid grid-cols-[1fr_2fr] justify-center items-start gap-2">
         {/* Sidebar */}
-        <div className="w-80 bg-white rounded-lg shadow-sm">
-          <div className="bg-blue-700 text-white font-semibold text-base rounded-t-lg px-6 py-3">
-            Topics
-          </div>
-          <div className="flex flex-col gap-2 p-4">
+
+        <BaseCard title={"Topics"}>
+          <div className="flex flex-col gap-2 p-2">
             {topics.map((topic, idx) => (
               <button
                 key={topic.title}
-                className={`text-left px-4 py-2 rounded border ${
+                className={`text-left cursor-pointer hover:bg-blue-500/20 text-xs px-3 py-2 rounded border ${
                   activeIdx === idx
                     ? "bg-blue-50 border-blue-400 text-blue-700 font-semibold shadow-inner flex justify-between items-center"
                     : "bg-gray-50 border-gray-200 text-gray-600"
@@ -99,20 +98,17 @@ export default function TutorialsPage() {
               </button>
             ))}
           </div>
-        </div>
-        {/* Content */}
-        <div className="flex-1 bg-white rounded-lg shadow-sm">
-          <div className="bg-blue-700 text-white font-semibold text-base rounded-t-lg px-6 py-3">
-            {topics[activeIdx].title}
-          </div>
-          <div className="p-6 text-gray-800 text-sm leading-relaxed">
+        </BaseCard>
+
+        <BaseCard title={topics[activeIdx].title}>
+          <div className="p-2 text-gray-800 text-xs leading-relaxed">
             {topics[activeIdx].content || (
               <span className="text-gray-400">
                 No content available for this topic.
               </span>
             )}
           </div>
-        </div>
+        </BaseCard>
       </div>
     </div>
   );

@@ -56,10 +56,10 @@ export default function FastPrintPage() {
   });
 
   return (
-    <div className="bg-blue-50 min-h-screen p-6">
+    <div className="bg-blue-50 min-h-screen p-2">
       <div className="flex items-center justify-between mb-4">
         <h1 className="text-xl font-bold text-gray-900">Fast Print</h1>
-        <button className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-semibold text-sm flex items-center gap-2">
+        <button className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md font-semibold text-xs flex items-center gap-2">
           Proceed to print <span className="ml-1">&gt;</span>
         </button>
       </div>
@@ -84,7 +84,7 @@ export default function FastPrintPage() {
                 className="accent-red-600 w-5 h-5"
               />
               <span
-                className={`text-base ${
+                className={`text-xs ${
                   selectedType === type.value
                     ? "font-semibold text-red-600"
                     : "text-gray-700"
@@ -120,7 +120,7 @@ export default function FastPrintPage() {
                     onChange={() => handleDateToggle(date)}
                     className="accent-gray-400 w-5 h-5"
                   />
-                  <span className="text-base text-gray-700">{date}</span>
+                  <span className="text-xs text-gray-700">{date}</span>
                 </label>
               ))}
             </div>

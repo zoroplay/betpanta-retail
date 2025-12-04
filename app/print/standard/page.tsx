@@ -3,6 +3,7 @@
 import Input from "@/components/inputs/Input";
 import SingleSearchInput from "@/components/inputs/SingleSearchInput";
 import BaseCard from "@/components/layout/BaseCard";
+import Table from "@/components/tables/Table";
 import Image from "next/image";
 import { useState } from "react";
 
@@ -101,7 +102,7 @@ const FastPrintPage = () => {
   };
 
   return (
-    <div className="bg-blue-50 min-h-screen p-6">
+    <div className="bg-blue-50 min-h-screen p-2">
       <div className="flex items-center justify-between mb-4">
         <h1 className="text-xl font-bold text-gray-900">Standard Print</h1>
         <button className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-semibold text-sm flex items-center gap-2">
@@ -148,66 +149,69 @@ const FastPrintPage = () => {
         headerClassName="flex justify-between items-center"
         optionalLabel={
           <button
-            className="text-xs text-blue-100 hover:text-white font-semibold px-2 py-1"
+            className="text-xs text-blue-50 hover:text-white font-semibold px-2 py-1"
             onClick={handleSelectAll}
           >
             Select all
           </button>
         }
       >
-        <div className="bg-white">
-          <div className="bg-black text-xs text-white font-semibold grid grid-cols-[1fr_5fr]">
-            <div className="py-2 px-4 flex justify-start items-center">
-              Region/Type
-            </div>
-            <div className="py-2 px-4 border-l border-gray-700 flex justify-start items-center">
-              Leagues
-            </div>
-          </div>
-          {mockRegions.map((region) => (
-            <div
-              key={region.name}
-              className="grid grid-cols-[1fr_5fr] border-b border-gray-200"
-            >
-              <div className="flex items-center gap-2 py-2 px-4">
-                <Image
-                  src={region.flag}
-                  alt={region.name + " flag"}
-                  className="w-6 h-4 rounded border"
-                  width={100}
-                  height={100}
-                />
-                <span className="font-semibold text-gray-800 text-xs">
-                  {region.name}
-                </span>
-              </div>
-              <div className="grid grid-cols-5 gap-2 py-2 px-4">
-                {region.leagues.map((league) => (
-                  <label
-                    key={league}
-                    className="flex items-center gap-2 cursor-pointer"
-                  >
-                    <input
-                      type="checkbox"
-                      checked={selectedLeagues.includes(league)}
-                      onChange={() => handleLeagueToggle(league)}
-                      className="accent-blue-600 w-4 h-4"
-                    />
-                    <span
-                      className={`text-xs ${
-                        selectedLeagues.includes(league)
-                          ? "font-semibold text-red-600"
-                          : "text-gray-700"
-                      }`}
+        <Table
+          columns={[
+            {
+              id: "region_type",
+              name: "Region/Type",
+              render: (_: any, row: any) => (
+                <div className="flex items-center gap-2 py-2 px-4">
+                  <Image
+                    src={row.region.flag}
+                    alt={row.region.name + " flag"}
+                    className="w-6 h-4 rounded border"
+                    width={100}
+                    height={100}
+                  />
+                  <span className="font-semibold text-gray-800 text-xs">
+                    {row.region.name}
+                  </span>
+                </div>
+              ),
+            },
+            {
+              id: "leagues",
+              name: "Leagues",
+              render: (_: any, row: any) => (
+                <div className="grid grid-cols-5 gap-2 py-2 px-4 w-full">
+                  {row.region.leagues.map((league: any) => (
+                    <label
+                      key={league}
+                      className="flex items-center gap-2 cursor-pointer"
                     >
-                      {league}
-                    </span>
-                  </label>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
+                      <input
+                        type="checkbox"
+                        checked={selectedLeagues.includes(league)}
+                        onChange={() => handleLeagueToggle(league)}
+                        className="accent-blue-600 w-4 h-4"
+                      />
+                      <span
+                        className={`text-xs ${
+                          selectedLeagues.includes(league)
+                            ? "font-semibold text-red-600"
+                            : "text-gray-700"
+                        }`}
+                      >
+                        {league}
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              ),
+            },
+          ]}
+          data={mockRegions.map((region) => ({ region }))}
+          isLoading={false}
+          className="grid-cols-[1fr_5fr]"
+          rounded="border-0"
+        />
       </BaseCard>
     </div>
   );
